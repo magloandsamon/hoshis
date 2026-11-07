@@ -9,8 +9,15 @@ jobs:
         with: { distribution: temurin, java-version: 17 }
       - uses: gradle/actions/setup-gradle@v3
         with: { gradle-version: 8.1.1 }
-      - run: gradle build
+      - name: Show files
+        run: find . -maxdepth 3 -not -path './.git/*' | head -50
+      - name: Build
+        run: |
+          DIR=$(dirname "$(find . -name build.gradle -not -path './.git/*' | head -1)")
+          echo "Building in $DIR"
+          cd "$DIR"
+          gradle build --no-daemon --stacktrace
       - uses: actions/upload-artifact@v4
         with:
           name: hoshi_story_forge_jar
-          path: build/libs/*.jar
+          path: '**/build/libs/*.jar'
